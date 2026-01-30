@@ -34,7 +34,7 @@ This project implements a cascade deep learning model for multi-label classifica
 - **GPU**: NVIDIA GPU with 16GB+ VRAM (L4, V100, A100 recommended)
 - **RAM**: 32GB+ system RAM
 - **Storage**: 
-  - Original dataset: ~100GB
+  - Original dataset: ~300GB
   - Processed data: ~20GB
   - Training space: 50GB+
 
