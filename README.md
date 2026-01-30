@@ -1,12 +1,12 @@
-# 🧠 ICH Detection System - Training Pipeline
+# 🧠 ICH Detection System – Training Pipeline
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10+-orange.svg)](https://www.tensorflow.org/)
 [![Keras](https://img.shields.io/badge/Keras-2.10-red.svg)](https://keras.io/)
 [![License](https://img.shields.io/badge/License-Academic-yellow.svg)]()
 
-Sistem Pelatihan Model Deteksi Perdarahan Intrakranial Berbasis Deep Learning
-Menggunakan Arsitektur Cascade EfficientNetV2 dan ConvNeXt
+Deep Learning Based Intracranial Hemorrhage Detection Model Training System
+Using Cascade EfficientNetV2 and ConvNeXt Architectures
 
 ---
 
@@ -24,19 +24,22 @@ Menggunakan Arsitektur Cascade EfficientNetV2 dan ConvNeXt
 * Troubleshooting
 * Disclaimer
 * Citation
+* License
+* Acknowledgments
 
 ---
 
 ## 🎯 Overview
 
-Proyek ini berfokus pada pipeline pelatihan model AI untuk klasifikasi multi-label Intracranial Hemorrhage dari citra CT Scan otak. Sistem dirancang untuk kebutuhan riset akademik dan pengembangan model, bukan untuk deployment klinis.
+This project focuses on an AI training pipeline for multi label classification of Intracranial Hemorrhage from brain CT scan images.
+The system is designed for academic research and model development, not for clinical deployment.
 
-Model utama menggunakan pendekatan cascade dua tahap:
+The main model uses a two stage cascade approach.
 
-* Tahap pertama mendeteksi keberadaan perdarahan secara biner
-* Tahap kedua mengklasifikasikan lima subtipe perdarahan
+* The first stage detects the presence of hemorrhage using binary classification
+* The second stage classifies five hemorrhage subtypes
 
-Jenis perdarahan yang dideteksi:
+Detected hemorrhage types
 
 * Any hemorrhage
 * Epidural
@@ -51,15 +54,15 @@ Jenis perdarahan yang dideteksi:
 
 ### Hardware
 
-* GPU NVIDIA dengan minimal 16 GB VRAM
-* RAM sistem minimal 32 GB
-* Storage:
+* NVIDIA GPU with at least 16 GB VRAM
+* System RAM at least 32 GB
+* Storage requirements
 
-  * Dataset mentah sekitar 300 GB
-  * Data hasil preprocessing sekitar 20 GB
-  * Ruang training minimal 50 GB
+  * Raw dataset around 300 GB
+  * Preprocessed data around 20 GB
+  * Training workspace at least 50 GB
 
-GPU yang direkomendasikan:
+Recommended GPUs
 
 * NVIDIA L4
 * V100
@@ -70,159 +73,164 @@ GPU yang direkomendasikan:
 * Python 3.9
 * TensorFlow 2.10.1
 * Keras 2.10.0
-* CUDA dan cuDNN sesuai versi TensorFlow
+* CUDA and cuDNN compatible with the TensorFlow version
 
-Library utama:
+Main libraries
 
 * pandas, numpy
 * pydicom, pillow
-* scikit-image, scikit-learn
+* scikit image, scikit learn
 * albumentations
-* opencv-python-headless
+* opencv python headless
 * matplotlib, seaborn, tqdm
 
 ---
 
 ## 📦 Dataset
 
-Dataset yang digunakan adalah RSNA Intracranial Hemorrhage Detection Dataset dari Kaggle.
+The dataset used is the [RSNA Intracranial Hemorrhage Detection Dataset](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection) from Kaggle.
 
-Karakteristik dataset:
+Dataset characteristics
 
-* Lebih dari 675 ribu citra CT Scan
-* Format DICOM
-* Multi-label annotation oleh radiolog
-* Enam label untuk setiap citra
+* More than 675 thousand CT scan images
+* DICOM format
+* Multi label annotations by radiologists
+* Six labels per image
 
-Struktur asli dataset:
+Original dataset structure
 
-* stage_2_train berisi file DICOM
-* stage_2_train.csv berisi label
+* stage_2_train contains DICOM files
+* stage_2_train.csv contains labels
 
 ---
 
 ## 🧩 Pipeline Workflow
 
-Alur kerja pipeline pelatihan:
+Training pipeline workflow
 
-1. Filtering dan sampling label CSV
-2. Penyalinan file DICOM terpilih
-3. Preprocessing DICOM ke PNG RGB
-4. Pembagian data train, validation, dan test
-5. Augmentasi data pada training set
-6. Training model cascade
+1. CSV label filtering and sampling
+2. Copying selected DICOM files
+3. DICOM preprocessing to RGB PNG
+4. Train, validation, and test split
+5. Data augmentation for the training set
+6. Cascade model training
 
-Pipeline ini dirancang modular agar setiap tahap dapat dijalankan dan diverifikasi secara terpisah.
+The pipeline is designed to be modular so each stage can be executed and verified independently.
 
 ---
 
 ## 🛠️ Step by Step Guide
 
-### Step 1. Filter dan Sampling Label
+### Step 1. Label Filtering and Sampling
 
-Notebook: CSV_filter.ipynb
+Notebook
+`CSV_filter.ipynb`
 
-Tujuan:
+Objectives
 
-* Menyeimbangkan dataset
-* Sampling sekitar 10.000 citra per label
+* Balance the dataset
+* Sample approximately 10,000 images per label
 
-Output utama:
+Main output
 
-* data_55k.csv dengan sekitar 55 ribu citra
+* `data_55k.csv` containing around 55,000 images
 
 ---
 
-### Step 2. Copy File DICOM
+### Step 2. Copy DICOM Files
 
-Notebook: Copy_filter.ipynb
+Notebook
+`Copy_filter.ipynb`
 
-Tujuan:
+Objectives
 
-* Menyalin hanya file DICOM yang digunakan
-* Mengurangi beban storage dan I O
+* Copy only required DICOM files
+* Reduce storage usage and I O overhead
 
-Teknik:
+Techniques
 
 * ThreadPoolExecutor
-* Multi-threaded copy
+* Multi threaded file copy
 
-Output:
+Output
 
-* Folder raw_data55k berisi file DICOM terpilih
-
----
-
-### Step 3. Preprocessing DICOM
-
-Notebook: Prepo.ipynb
-
-Tahapan preprocessing:
-
-* Membaca metadata DICOM
-* Konversi pixel ke Hounsfield Unit
-* Penerapan tiga window klinis
-* Blood window sebagai channel merah
-* Brain window sebagai channel hijau
-* Bone window sebagai channel biru
-* Resize ke 256 x 256
-* Normalisasi ke rentang 0 sampai 1
-
-Output:
-
-* File PNG RGB di folder raw_png
+* `raw_data55k` directory containing selected DICOM files
 
 ---
 
-### Step 4. Split Dataset
+### Step 3. DICOM Preprocessing
 
-Notebook: Split.ipynb
+Notebook
+`Prepo.ipynb`
 
-Pembagian data:
+Preprocessing steps
 
-* Training 80 persen
-* Validation 10 persen
-* Test 10 persen
+* Read DICOM metadata
+* Convert pixel values to Hounsfield Units
+* Apply three clinical window settings
+* Blood window as red channel
+* Brain window as green channel
+* Bone window as blue channel
+* Resize to 256 x 256
+* Normalize pixel values to range 0 to 1
 
-Split dilakukan secara stratified untuk menjaga distribusi kelas.
+Output
+
+* RGB PNG images stored in the `raw_png` directory
+
+---
+
+### Step 4. Dataset Split
+
+Notebook
+`Split.ipynb`
+
+Data split configuration
+
+* Training set 80 percent
+* Validation set 10 percent
+* Test set 10 percent
+
+The split is performed using stratified sampling to preserve class distribution.
 
 ---
 
 ### Step 5. Data Augmentation
 
-Notebook: Augmen.ipynb
+Notebook
+`Augmen.ipynb`
 
-Augmentasi hanya diterapkan pada training set.
+Augmentation is applied only to the training set.
 
-Teknik augmentasi:
+Augmentation techniques
 
-* Flip horizontal dan vertikal
-* Rotasi ringan
-* Perubahan brightness dan contrast
+* Horizontal and vertical flip
+* Mild rotation
+* Brightness and contrast adjustment
 * Gaussian blur
 * Elastic transform
 
-Fokus utama augmentasi:
+Main focus
 
-* Menambah representasi kelas minoritas seperti epidural
+* Increasing representation of minority classes such as epidural hemorrhage
 
 ---
 
 ### Step 6. Model Training
 
-Notebook utama:
+Main notebooks
 
-* Cascade.ipynb
-* modif_cascade.ipynb
-* Eff2.ipynb
-* Conx.ipynb
+* `Cascade.ipynb`
+* `modif_cascade.ipynb`
+* `Eff2.ipynb`
+* `Conx.ipynb`
 
-Tahap training:
+Training stages
 
-* Training awal dengan backbone dibekukan
-* Fine tuning dengan backbone dibuka
-* Evaluasi pada validation set
-* Penyimpanan model terbaik
+* Initial training with frozen backbone
+* Fine tuning with unfrozen backbone
+* Validation set evaluation
+* Best model checkpoint saving
 
 ---
 
@@ -230,95 +238,97 @@ Tahap training:
 
 ### Cascade Architecture
 
-Tahap 1:
+Stage 1
 
-* EfficientNetV2 sebagai backbone
-* Binary classifier untuk mendeteksi adanya perdarahan
+* EfficientNetV2 as backbone
+* Binary classifier for hemorrhage presence detection
 
-Tahap 2:
+Stage 2
 
-* EfficientNetV2 dan ConvNeXt sebagai dual backbone
-* Feature fusion dan attention mechanism
-* Multi-label classifier untuk lima subtipe ICH
+* EfficientNetV2 and ConvNeXt as dual backbones
+* Feature fusion with attention mechanism
+* Multi label classifier for five ICH subtypes
 
-Pendekatan cascade membantu mengurangi false positive dan meningkatkan fokus pada citra positif.
+The cascade approach helps reduce false positives and improves focus on positive hemorrhage cases.
 
 ---
 
 ## ⚙️ Training Configuration
 
-Parameter utama:
+Main parameters
 
 * Image size 256
 * Batch size 32
-* Epoch 50
+* Epochs 50
 * Optimizer Adam
 
-Teknik optimasi:
+Optimization techniques
 
 * Mixed precision training
 * XLA compilation
-* Class weighting untuk data imbalance
-* Early stopping dan learning rate scheduling
+* Class weighting for data imbalance
+* Early stopping
+* Learning rate scheduling
 
-Training dilakukan dalam beberapa fase dengan learning rate berbeda.
+Training is conducted in multiple phases using different learning rates.
 
 ---
 
 ## 📊 Results and Evaluation
 
-Evaluasi dilakukan menggunakan:
+Evaluation metrics
 
 * Accuracy
 * Precision
 * Recall
-* F1 Score
+* F1 score
 * AUC ROC
 
-Evaluasi dilakukan per kelas dan secara keseluruhan.
+Evaluation is performed per class and overall.
 
-Ekspektasi performa:
+Expected performance
 
-* Deteksi any hemorrhage dengan AUC sekitar 0.98
-* Subtype classification dengan AUC rata-rata 0.92 sampai 0.95
+* Any hemorrhage detection AUC around 0.98
+* Subtype classification average AUC between 0.92 and 0.95
 
 ---
 
 ## 📂 Project Structure
 
+```
 project
-
-* notebooks berisi seluruh pipeline Jupyter Notebook
-* data berisi label, DICOM, dan PNG hasil preprocessing
-* models berisi model hasil training
-* README berisi dokumentasi pipeline
+├── notebooks     # All Jupyter notebooks for the pipeline
+├── data          # Labels, DICOM files, and preprocessed PNG images
+├── models        # Trained model checkpoints
+└── README.md     # Pipeline documentation
+```
 
 ---
 
 ## 🔧 Troubleshooting
 
-Masalah umum:
+Common issues
 
-* Out of memory, kurangi batch size
-* Training lambat, aktifkan mixed precision
-* Overfitting, tingkatkan augmentasi dan dropout
-* Performa kelas minoritas rendah, sesuaikan class weight
+* Out of memory, reduce batch size
+* Slow training, enable mixed precision
+* Overfitting, increase augmentation and dropout
+* Poor minority class performance, adjust class weights
 
 ---
 
 ## ⚠️ Disclaimer
 
-Pipeline ini dibuat untuk keperluan akademik dan riset.
+This pipeline is developed for academic research purposes only.
 
-Tidak ditujukan untuk diagnosis klinis atau penggunaan medis nyata.
+It is not intended for clinical diagnosis or real world medical use.
 
-Model belum melalui validasi klinis dan tidak memiliki persetujuan regulator.
+The models have not undergone clinical validation and do not have regulatory approval.
 
 ---
 
 ## 📝 Citation
 
-Jika menggunakan pipeline ini, silakan sitasi:
+If you use this pipeline, please cite
 
 RSNA Intracranial Hemorrhage Detection Challenge
 Kaggle
@@ -327,16 +337,16 @@ Kaggle
 
 ## 📄 License
 
-Lisensi hanya untuk penggunaan akademik dan riset.
+This project is licensed for academic and research use only.
 
 ---
 
 ## 🙏 Acknowledgments
 
-* RSNA sebagai penyedia dataset
+* RSNA for providing the dataset
 * Kaggle
-* TensorFlow dan Keras
-* Albumentations
+* TensorFlow and Keras teams
+* Albumentations contributors
 
 ---
 
